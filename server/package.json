@@ -11,7 +11,8 @@
     "prisma:migrate": "prisma migrate dev --name init",
     "prisma:studio": "prisma studio",
     "db:seed": "node src/seed.js",
-    "test": "node src/tests/runTests.js"
+    "test": "node src/tests/runTests.js",
+    "vercel-build": "prisma generate"
   },
   "keywords": [],
   "author": "",
