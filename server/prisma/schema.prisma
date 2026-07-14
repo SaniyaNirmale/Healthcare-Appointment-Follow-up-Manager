@@ -1,0 +1,122 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  String               @id @default(uuid())
+  email               String               @unique
+  password            String
+  role                String               // 'ADMIN', 'DOCTOR', 'PATIENT'
+  fullName            String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  
+  // Relations
+  doctorProfile       DoctorProfile?
+  patientAppointments Appointment[]        @relation("PatientAppointments")
+  doctorAppointments  Appointment[]        @relation("DoctorAppointments")
+  slotHolds           SlotHold[]
+  reminders           MedicationReminder[]
+}
+
+model DoctorProfile {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialization    String
+  slotDuration      Int      @default(30) // in minutes
+  workingHoursStart String   // "09:00"
+  workingHoursEnd   String   // "17:00"
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model DoctorLeave {
+  id         String   @id @default(uuid())
+  doctorId   String
+  leaveDate  String   // "YYYY-MM-DD"
+  createdAt  DateTime @default(now())
+
+  @@unique([doctorId, leaveDate])
+}
+
+model SlotHold {
+  id           String   @id @default(uuid())
+  doctorId     String
+  slotTime     DateTime
+  heldByUserId String
+  heldByUser   User     @relation(fields: [heldByUserId], references: [id], onDelete: Cascade)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([doctorId, slotTime])
+}
+
+model Appointment {
+  id                String               @id @default(uuid())
+  patientId         String
+  patient           User                 @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId          String
+  doctor            User                 @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
+  appointmentTime   DateTime
+  duration          Int                  // slot duration in minutes
+  status            String               // 'CONFIRMED', 'CANCELLED', 'COMPLETED'
+  
+  // Pre-visit details (AI output)
+  symptoms          String
+  urgency           String               // 'Low', 'Medium', 'High'
+  preVisitSummary   String               // JSON string storing chief complaint & suggested questions
+  
+  // Post-visit details (AI/Doctor output)
+  notes             String?              // Doctor's clinical notes
+  prescription      String?              // Doctor's prescription text
+  postVisitSummary  String?              // Patient-friendly post-visit notes
+  
+  calendarEventId   String?              // Google Calendar event ID
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  reminders         MedicationReminder[]
+
+  @@index([doctorId, appointmentTime])
+}
+
+model MedicationReminder {
+  id             String      @id @default(uuid())
+  appointmentId  String
+  appointment    Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        User        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  medicationName String
+  dosage         String
+  frequency      String      // "daily", "twice_daily", "thrice_daily"
+  nextSendTime   DateTime
+  lastSentTime   DateTime?
+  status         String      // 'ACTIVE', 'COMPLETED'
+  createdAt      DateTime    @default(now())
+}
+
+model NotificationLog {
+  id             String   @id @default(uuid())
+  recipientEmail String
+  type           String   // 'BOOKING_CONFIRMATION', 'REMINDER', 'CANCELLATION', 'MEDICATION'
+  status         String   // 'PENDING', 'SENT', 'FAILED'
+  retryCount     Int      @default(0)
+  errorMessage   String?
+  payload        String   // JSON string of email subject, html, text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model DoctorGoogleAuth {
+  id           String   @id @default(uuid())
+  doctorId     String   @unique
+  refreshToken String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

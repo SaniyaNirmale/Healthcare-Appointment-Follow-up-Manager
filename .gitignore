@@ -1,0 +1,32 @@
+# Dependency folders
+node_modules/
+
+# Local env files (holds secret keys)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build output
+dist/
+build/
+.vercel
+
+# Database files
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Temporary files
+temp/
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Final packaged zip
+medical_appointment_manager.zip
