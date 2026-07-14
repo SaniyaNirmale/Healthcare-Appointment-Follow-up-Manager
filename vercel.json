@@ -30,7 +30,7 @@
   "crons": [
     {
       "path": "/api/jobs/trigger",
-      "schedule": "*/10 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
