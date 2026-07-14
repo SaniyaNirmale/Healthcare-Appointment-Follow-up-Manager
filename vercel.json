@@ -20,19 +20,11 @@
     },
     {
       "src": "/assets/(.*)",
-      "dest": "client/dist/assets/$1"
-    },
-    {
-      "src": "/favicon.svg",
-      "dest": "client/dist/favicon.svg"
-    },
-    {
-      "src": "/icons.svg",
-      "dest": "client/dist/icons.svg"
+      "dest": "/assets/$1"
     },
     {
       "src": "/((?!api/).*)",
-      "dest": "client/dist/index.html"
+      "dest": "/index.html"
     }
   ],
   "crons": [
