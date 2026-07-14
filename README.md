@@ -1,5 +1,7 @@
 # MedClinic Manager - Healthcare Appointment & Follow-up Manager
 
+🌐 **Hosted Application URL**: [https://healthcare-appointment-follow-up-manager-4ug5-kpxtbil2i.vercel.app](https://healthcare-appointment-follow-up-manager-4ug5-kpxtbil2i.vercel.app)
+
 MedClinic Manager is a complete, role-based clinic management system designed for Patients, Doctors, and Administrators. It implements secure authentication, dynamic slot scheduling with a 5-minute concurrency hold, automatic leave-conflict cancellations, automated pre-visit symptom analysis, and post-consultation visit summaries with background-queued email alerts and medication reminders.
 
 ---
